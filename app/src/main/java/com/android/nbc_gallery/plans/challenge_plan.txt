@@ -1,0 +1,28 @@
+# 6주차 과제
+
+## 과제 1번
+
+### 안드로이드 숙련주차 팀프로젝트과제중 1개 이상의 화면에 Clean Architecture 적용하기
+
+점검사항
+
+1. **기본 구조 변경**
+    - 기존 MVC 구조에서 각 레이어를 Clean Architecture의 레이어 (Presentation, Domain, Data)로 분리했는가?
+2. **Presentation Layer**
+    - UI 관련 코드는 Presentation Layer로 이동했는가?
+    - ViewModel 또는 Presenter가 사용되었는가?
+    - UI 상태 관리와 이벤트 처리가 적절하게 구현되었는가?
+3. **Domain Layer (Optional)**
+    - 비즈니스 로직과 관련된 코드는 Domain Layer로 이동했는가?
+    - Use Case(또는 Interactor)가 구현되었는가?
+    - Domain 모델이 적절하게 정의되고 사용되었는가?
+4. **Data Layer**
+    - 데이터 소스(네트워크, 로컬 데이터베이스 등)는 Data Layer로 이동했는가?
+    - Repository 패턴이 적용되었는가?
+    - 데이터 소스 간의 의존성이 적절하게 처리되었는가?
+5. **의존성 관리**
+    - 각 레이어 간의 의존성이 적절하게 분리되었는가?
+    - 레이어 간의 의존성이 역전되었는가? (Interface를 통해 상위 레이어가 하위 레이어에 의존하지 않도록)
+6. **코드 품질**
+    - 코드가 Clean Code 원칙을 따르는가? (예: 가독성, 명확한 변수명, 주석)
+    - 불필요한 코드가 제거되었는가?
