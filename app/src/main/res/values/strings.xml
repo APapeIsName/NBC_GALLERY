@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NBC_GALLERY</string>
+
+    <string name="search_text">찾기</string>
+    <string name="storage_text">보관함</string>
+    <string name="search_btn_text">검색</string>
+    
 </resources>
