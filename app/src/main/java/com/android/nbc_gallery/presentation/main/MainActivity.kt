@@ -6,18 +6,21 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.android.nbc_gallery.R
+import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.databinding.ActivityMainBinding
-import com.android.nbc_gallery.presentation.main.viewmodel.MainViewModelFactory
-import com.android.nbc_gallery.presentation.main.viewmodel.MainViewmodel
+import com.android.nbc_gallery.presentation.GalleryViewModelFactory
+import com.android.nbc_gallery.presentation.GalleryViewmodel
 import com.android.nbc_gallery.presentation.search.SearchFragment
+import com.android.nbc_gallery.presentation.storage.StorageFragment
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val viewModel by viewModels<MainViewmodel> {
-        MainViewModelFactory()
+    val uiRepositoryGalleryImpl = UiRepositoryGalleryImpl()
+    private val viewModel by viewModels<GalleryViewmodel> {
+        GalleryViewModelFactory(uiRepositoryGalleryImpl)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +32,26 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val a = SearchFragment().newInstance("", "")
+        val searchFragment = SearchFragment.newInstance()
+        val storageFragment = StorageFragment.newInstance("", "")
 
-        supportFragmentManager.commit {
-            replace(R.id.fl_main, a)
+        setFragment(searchFragment)
+
+        binding.btnMainSearch.setOnClickListener {
+            setFragment(searchFragment)
+        }
+        binding.btnMainStorage.setOnClickListener {
+            setFragment(storageFragment)
         }
 
     }
+
+    fun setFragment(fragment: Fragment) {
+        supportFragmentManager.commit {
+            replace(R.id.fl_main, fragment)
+            setReorderingAllowed(true)
+//            addToBackStack("")
+        }
+    }
+
 }

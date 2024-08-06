@@ -1,42 +1,59 @@
 package com.android.nbc_gallery.presentation.search
 
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.android.nbc_gallery.R
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import com.android.nbc_gallery.data.database.APIDataStorage
+import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
+import com.android.nbc_gallery.databinding.FragmentSearchBinding
+import com.android.nbc_gallery.presentation.GalleryRecyclerViewAdapter
+import com.android.nbc_gallery.presentation.GalleryViewModelFactory
+import com.android.nbc_gallery.presentation.GalleryViewmodel
+import com.android.nbc_gallery.presentation.main.MainActivity
+import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class SearchFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
+    private val binding by lazy { FragmentSearchBinding.inflate(layoutInflater) }
+    private var keyword: String? = null
+    private val searchAdapter = GalleryRecyclerViewAdapter(0)
+    private val viewModel by activityViewModels<GalleryViewmodel> {
+        GalleryViewModelFactory(UiRepositoryGalleryImpl())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        arguments?.let {}
+        searchAdapter.itemClick = GalleryRecyclerViewAdapter.ItemClick {
+            TODO("Not yet implemented")
+        }
+        searchAdapter.drawImage = GalleryRecyclerViewAdapter.DrawImage { url ->
+            Glide.with(this).load(url)
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_search, container, false)
+    ): View {
+        return binding.root
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String): SearchFragment {
+        fun newInstance(): SearchFragment {
             return SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+                arguments = Bundle().apply {}
             }
         }
 
@@ -44,5 +61,28 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        with(binding) {
+            btnSearch.setOnClickListener {
+                getDataFromAPI(binding.etSearch.text.toString())
+            }
+            rvSearch.adapter = searchAdapter
+            rvSearch.layoutManager = GridLayoutManager(requireContext(), 2)
+            searchAdapter.submitList(listOf())
+        }
+        viewModel.liveData.observe(viewLifecycleOwner){
+            Log.d("뷰모델 체크", "${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}")
+            searchAdapter.submitList(viewModel.liveData.value)
+        }
     }
+
+    fun getDataFromAPI(
+        query: String,
+        page: Int = 1,
+    ) = runBlocking {
+        viewLifecycleOwner.lifecycleScope.launch {
+            APIDataStorage.getDataFromApi(query, page = page)
+            viewModel.updateData()
+        }
+    }
+
 }
