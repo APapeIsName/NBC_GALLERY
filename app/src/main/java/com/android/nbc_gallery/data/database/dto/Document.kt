@@ -2,12 +2,14 @@ package com.android.nbc_gallery.data.database.dto
 
 
 import com.google.gson.annotations.SerializedName
+import java.time.format.DateTimeFormatter
+import java.util.Date
 
 data class Document(
     @SerializedName("collection")
     val collection: String?,
     @SerializedName("datetime")
-    val datetime: String?,
+    val datetime: Date?,
     @SerializedName("display_sitename")
     val displaySitename: String?,
     @SerializedName("doc_url")

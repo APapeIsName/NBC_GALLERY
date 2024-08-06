@@ -31,9 +31,8 @@ class GalleryRecyclerViewAdapter(private val type: Int) : ListAdapter<UiModel.Ga
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val aa = getItem(position)
         if(holder is SearchViewHolder) holder.bind(itemClick, drawImage, getItem(position))
-        else if(holder is StorageViewHolder) holder.bind()
+        else if(holder is StorageViewHolder) holder.bind(itemClick, drawImage, getItem(position))
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -41,7 +40,7 @@ class GalleryRecyclerViewAdapter(private val type: Int) : ListAdapter<UiModel.Ga
     }
 
     fun interface ItemClick {
-        fun onClick()
+        fun onClick(id: String)
     }
 
     fun interface DrawImage {

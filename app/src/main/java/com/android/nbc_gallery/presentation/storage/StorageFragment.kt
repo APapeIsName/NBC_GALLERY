@@ -1,42 +1,66 @@
 package com.android.nbc_gallery.presentation.storage
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import com.android.nbc_gallery.R
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
+import com.android.nbc_gallery.databinding.FragmentStorageBinding
+import com.android.nbc_gallery.presentation.GalleryRecyclerViewAdapter
+import com.android.nbc_gallery.presentation.GalleryViewModelFactory
+import com.android.nbc_gallery.presentation.GalleryViewmodel
+import com.bumptech.glide.Glide
 
 class StorageFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
+    private val binding by lazy { FragmentStorageBinding.inflate(layoutInflater) }
+    private val storageAdapter = GalleryRecyclerViewAdapter(1)
+    private val viewModel by activityViewModels<GalleryViewmodel> {
+        GalleryViewModelFactory(UiRepositoryGalleryImpl())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        arguments?.let {}
+        storageAdapter.itemClick = GalleryRecyclerViewAdapter.ItemClick { id ->
+            val index = viewModel.findCorrectId(id)
+            if(index != null) viewModel.switchFavorite(index)
+        }
+        storageAdapter.drawImage = GalleryRecyclerViewAdapter.DrawImage { url ->
+            Glide.with(this).load(url)
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_storage, container, false)
+    ): View {
+        return binding.root
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance() =
             StorageFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+                arguments = Bundle().apply {}
             }
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        with(binding) {
+            rvStorage.adapter = storageAdapter
+            rvStorage.layoutManager = GridLayoutManager(requireContext(), 2)
+            storageAdapter.submitList(viewModel.getFavoriteElements())
+        }
+        viewModel.liveData.observe(viewLifecycleOwner){
+            Log.d("스토리지 뷰모델 체크", "${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}")
+            storageAdapter.submitList(viewModel.getFavoriteElements())
+        }
+    }
+
 }

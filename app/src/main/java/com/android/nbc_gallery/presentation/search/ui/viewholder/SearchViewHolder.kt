@@ -12,6 +12,8 @@ class SearchViewHolder(private val binding: LayoutItemRecyclerImageBinding) : Re
         drawImage?.onDraw(ui.imgUrl ?: "")?.into(binding.ivRecyclerImageContent)
         binding.tvRecyclerImageFrom.text = ui.siteName
         binding.tvRecyclerImageDate.text = ui.dateTime
-//        itemClick?.onClick()
+        binding.cvRecycler.setOnClickListener {
+            itemClick?.onClick(ui.id)
+        }
     }
 }

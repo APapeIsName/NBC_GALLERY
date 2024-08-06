@@ -11,7 +11,7 @@ sealed class UiModel{
         val imgUrl: String? = null,
         val siteName: String? = null,
         val dateTime: String? = null,
-        val isFavorite: Boolean? = null,
+        val isFavorite: Boolean = false,
     ): UiModel()
 }
 
