@@ -35,7 +35,7 @@ class SearchFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {}
         searchAdapter.itemClick = GalleryRecyclerViewAdapter.ItemClick {
-            TODO("Not yet implemented")
+            TODO("Not yet implementedd")
         }
         searchAdapter.drawImage = GalleryRecyclerViewAdapter.DrawImage { url ->
             Glide.with(this).load(url)
