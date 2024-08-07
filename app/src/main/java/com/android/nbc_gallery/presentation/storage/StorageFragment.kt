@@ -8,12 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import com.android.nbc_gallery.R
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.databinding.FragmentStorageBinding
-import com.android.nbc_gallery.presentation.GalleryRecyclerViewAdapter
-import com.android.nbc_gallery.presentation.GalleryViewModelFactory
-import com.android.nbc_gallery.presentation.GalleryViewmodel
+import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
+import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
+import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
 import com.bumptech.glide.Glide
 
 class StorageFragment : Fragment() {

@@ -1,4 +1,4 @@
-package com.android.nbc_gallery.presentation
+package com.android.nbc_gallery.presentation.common
 
 import androidx.recyclerview.widget.DiffUtil
 import com.android.nbc_gallery.presentation.uimodel.UiModel

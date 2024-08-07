@@ -1,4 +1,4 @@
-package com.android.nbc_gallery.presentation
+package com.android.nbc_gallery.presentation.common
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater

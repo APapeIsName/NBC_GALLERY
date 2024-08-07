@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.getSystemService
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -12,10 +12,11 @@ import androidx.fragment.app.commit
 import com.android.nbc_gallery.R
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.databinding.ActivityMainBinding
-import com.android.nbc_gallery.presentation.GalleryViewModelFactory
-import com.android.nbc_gallery.presentation.GalleryViewmodel
+import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
+import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
 import com.android.nbc_gallery.presentation.search.SearchFragment
 import com.android.nbc_gallery.presentation.storage.StorageFragment
+import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -36,20 +37,37 @@ class MainActivity : AppCompatActivity() {
         val searchFragment = SearchFragment.newInstance()
         val storageFragment = StorageFragment.newInstance()
 
-        setFragment(searchFragment)
+        val fragmentList = listOf(searchFragment, storageFragment)
 
-        binding.btnMainSearch.setOnClickListener {
-            setFragment(searchFragment)
-        }
-        binding.btnMainStorage.setOnClickListener {
-            setFragment(storageFragment)
-        }
+        val viewPagerAdapter = MainViewPagerAdapter(this)
+        viewPagerAdapter.fragments = fragmentList
 
+        binding.vpMain.adapter = viewPagerAdapter
+
+        val tabTitles = listOf(resources.getString(R.string.search_text), resources.getString(R.string.storage_text))
+        val tabIcons = listOf(
+            AppCompatResources.getDrawable(this, R.drawable.baseline_search_24),
+            AppCompatResources.getDrawable(this, R.drawable.baseline_folder_24)
+        )
+
+        TabLayoutMediator(binding.tlMain, binding.vpMain) { tab, pos ->
+            tab.text = tabTitles[pos]
+            tab.icon = tabIcons[pos]
+        }.attach()
+
+//        setFragment(searchFragment)
+//
+//        binding.btnMainSearch.setOnClickListener {
+//            setFragment(searchFragment)
+//        }
+//        binding.btnMainStorage.setOnClickListener {
+//            setFragment(storageFragment)
+//        }
     }
 
     fun setFragment(fragment: Fragment) {
         supportFragmentManager.commit {
-            replace(R.id.fl_main, fragment)
+            replace(R.id.vp_main, fragment)
             setReorderingAllowed(true)
 //            addToBackStack("")
         }

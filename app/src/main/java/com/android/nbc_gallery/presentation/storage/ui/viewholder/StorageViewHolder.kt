@@ -3,7 +3,7 @@ package com.android.nbc_gallery.presentation.storage.ui.viewholder
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.android.nbc_gallery.databinding.LayoutItemRecyclerImageBinding
-import com.android.nbc_gallery.presentation.GalleryRecyclerViewAdapter
+import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
 import com.android.nbc_gallery.presentation.uimodel.UiModel
 
 class StorageViewHolder(private val binding: LayoutItemRecyclerImageBinding) : RecyclerView.ViewHolder(binding.root) {

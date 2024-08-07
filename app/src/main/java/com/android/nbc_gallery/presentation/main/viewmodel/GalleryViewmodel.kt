@@ -1,11 +1,10 @@
-package com.android.nbc_gallery.presentation
+package com.android.nbc_gallery.presentation.main.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.presentation.repository.UiRepository
 import com.android.nbc_gallery.presentation.uimodel.UiModel
 
