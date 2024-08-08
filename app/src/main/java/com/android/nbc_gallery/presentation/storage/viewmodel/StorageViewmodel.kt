@@ -1,4 +1,4 @@
-package com.android.nbc_gallery.presentation.main.viewmodel
+package com.android.nbc_gallery.presentation.storage.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,22 +14,12 @@ import com.android.nbc_gallery.presentation.uimodel.UiModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class GalleryViewmodel(private val uiRepository: UiRepository) : ViewModel() {
+class StorageViewmodel(private val uiRepository: UiRepository) : ViewModel() {
     private val _liveData = MutableLiveData<List<UiModel>>()
     val liveData: LiveData<List<UiModel>> get() = _liveData
 
-    fun updateData() {
-        _liveData.value = uiRepository.getUiModelList() as List<UiModel.GalleryModel>
-        addLoading()
-    }
-
     fun updateList(list: List<UiModel>) {
         _liveData.value = list
-    }
-
-    fun compareFavorite(list: List<UiModel>) {
-        // isFavorite 이 true인 애들 중에 지금 리스트 중에 imgUrl이 같은 애가 있다면
-        
     }
 
     fun switchFavorite(index: Int) {
@@ -58,22 +48,12 @@ class GalleryViewmodel(private val uiRepository: UiRepository) : ViewModel() {
         tempList.add(UiModel.LoadingModel())
         _liveData.value = tempList
     }
-
-    fun getDataFromAPI(
-        query: String,
-        page: Int = 1,
-    ) = runBlocking {
-        viewModelScope.launch {
-            APIDataStorage.getDataFromApi(query, page = page)
-            updateData()
-        }
-    }
-
 }
 
-class GalleryViewModelFactory(val uiRepository: UiRepository) : ViewModelProvider.Factory {
+class StorageViewModelFactory(val uiRepository: UiRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        return GalleryViewmodel(uiRepository) as T
+        return StorageViewmodel(uiRepository) as T
     }
 }
+
 

@@ -1,8 +1,7 @@
-package com.android.nbc_gallery.data.database.dto
+package com.android.nbc_gallery.data.database.dto.img
 
 
 import com.google.gson.annotations.SerializedName
-import java.time.format.DateTimeFormatter
 import java.util.Date
 
 data class Document(

@@ -10,10 +10,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.android.nbc_gallery.R
+import com.android.nbc_gallery.data.database.StorageData
+import com.android.nbc_gallery.data.entity.DataModel
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.databinding.ActivityMainBinding
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
+import com.android.nbc_gallery.presentation.mapper.toGalleryModel
 import com.android.nbc_gallery.presentation.search.SearchFragment
 import com.android.nbc_gallery.presentation.storage.StorageFragment
 import com.google.android.material.tabs.TabLayoutMediator
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+//        viewModel.updateList(StorageData.loadDataInLocal(this).filterIsInstance<DataModel.GalleryEntity>().toGalleryModel())
 
         val searchFragment = SearchFragment.newInstance()
         val storageFragment = StorageFragment.newInstance()

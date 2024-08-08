@@ -8,18 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.android.nbc_gallery.data.database.StorageData
+import com.android.nbc_gallery.data.entity.DataModel
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.databinding.FragmentStorageBinding
 import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
+import com.android.nbc_gallery.presentation.mapper.toGalleryModel
+import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewModelFactory
+import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewmodel
 import com.bumptech.glide.Glide
 
 class StorageFragment : Fragment() {
     private val binding by lazy { FragmentStorageBinding.inflate(layoutInflater) }
-    private val storageAdapter = GalleryRecyclerViewAdapter(1)
-    private val viewModel by activityViewModels<GalleryViewmodel> {
-        GalleryViewModelFactory(UiRepositoryGalleryImpl())
+    private val storageAdapter = GalleryRecyclerViewAdapter()
+    private val viewModel by activityViewModels<StorageViewmodel> {
+        StorageViewModelFactory(UiRepositoryGalleryImpl())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +37,7 @@ class StorageFragment : Fragment() {
         storageAdapter.drawImage = GalleryRecyclerViewAdapter.DrawImage { url ->
             Glide.with(this).load(url)
         }
+        viewModel.updateList(StorageData.loadDataInLocal(requireContext()).filterIsInstance<DataModel.GalleryEntity>().toGalleryModel())
     }
 
     override fun onCreateView(
@@ -57,7 +63,8 @@ class StorageFragment : Fragment() {
             storageAdapter.submitList(viewModel.getFavoriteElements())
         }
         viewModel.liveData.observe(viewLifecycleOwner){
-            Log.d("스토리지 뷰모델 체크", "${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}")
+            //${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}
+            Log.d("스토리지 뷰모델 체크", "${viewModel.getFavoriteElements()} , ")
             storageAdapter.submitList(viewModel.getFavoriteElements())
         }
     }

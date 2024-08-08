@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.android.nbc_gallery.data.database.APIDataStorage
+import com.android.nbc_gallery.data.database.StorageData
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.databinding.FragmentSearchBinding
 import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
@@ -22,14 +24,16 @@ import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+const val MAX_PAGE = 15
 
 class SearchFragment : Fragment() {
     private val binding by lazy { FragmentSearchBinding.inflate(layoutInflater) }
 //    private var keyword: String? = null
-    private val searchAdapter = GalleryRecyclerViewAdapter(0)
+    private val searchAdapter = GalleryRecyclerViewAdapter()
     private val viewModel by activityViewModels<GalleryViewmodel> {
         GalleryViewModelFactory(UiRepositoryGalleryImpl())
     }
+    private var pageNum: Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +44,9 @@ class SearchFragment : Fragment() {
         }
         searchAdapter.drawImage = GalleryRecyclerViewAdapter.DrawImage { url ->
             Glide.with(this).load(url)
+        }
+        searchAdapter.currentListChange = GalleryRecyclerViewAdapter.CurrentListChange { last ->
+//            binding.rvSearch.scrollToPosition(last)
         }
     }
 
@@ -65,7 +72,8 @@ class SearchFragment : Fragment() {
         with(binding) {
             etSearch.setText(requireContext().getSharedPreferences("keyword", MODE_PRIVATE).getString("word", ""))
             btnSearch.setOnClickListener {
-                getDataFromAPI(binding.etSearch.text.toString())
+                pageNum = 1
+                viewModel.getDataFromAPI(binding.etSearch.text.toString(), page = if(pageNum <= MAX_PAGE) pageNum++ else pageNum)
                 val inputMethodManager = requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
                 val savedKeyword = requireContext().getSharedPreferences("keyword", MODE_PRIVATE)
@@ -74,22 +82,42 @@ class SearchFragment : Fragment() {
                 keywordEditor.apply()
             }
             rvSearch.adapter = searchAdapter
-            rvSearch.layoutManager = GridLayoutManager(requireContext(), 2)
+            rvSearch.layoutManager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
+            (rvSearch.layoutManager as StaggeredGridLayoutManager).gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+//            rvSearch.layoutManager = GridLayoutManager(requireContext(), 2)
+//            rvSearch.itemAnimator = null
+
+            rvSearch.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    val last by lazy {
+                        if(viewModel.liveData.value?.size != null) {
+                            viewModel.liveData.value?.size!!.minus(1)
+                        } else 0
+                    }
+                    val lastItems = (rvSearch.layoutManager as StaggeredGridLayoutManager).findLastCompletelyVisibleItemPositions(null)
+                    val isLast = (lastItems[0] == last) || (lastItems[1] == last)
+                    if(
+                        isLast
+//                        !rvSearch.canScrollVertically(1)
+//                        &&
+                            ) {
+                        viewModel.getDataFromAPI(binding.etSearch.text.toString(), page = if(pageNum <= MAX_PAGE) pageNum++ else pageNum)
+                        Log.d("최하단 도착", "최하단 도착")
+                    }
+                    Log.d("최하단 사이즈", "${(rvSearch.layoutManager as StaggeredGridLayoutManager)
+                        .findLastCompletelyVisibleItemPositions(null)[0]} , " +
+                            "${(rvSearch.layoutManager as StaggeredGridLayoutManager)
+                                .findLastCompletelyVisibleItemPositions(null)[1]} , ${viewModel.liveData.value?.size}")
+                }
+            })
             searchAdapter.submitList(listOf())
         }
-        viewModel.liveData.observe(viewLifecycleOwner){
+        viewModel.liveData.observe(viewLifecycleOwner){ livedata ->
             Log.d("뷰모델 체크", "${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}")
             searchAdapter.submitList(viewModel.liveData.value)
-        }
-    }
-
-    fun getDataFromAPI(
-        query: String,
-        page: Int = 1,
-    ) = runBlocking {
-        viewLifecycleOwner.lifecycleScope.launch {
-            APIDataStorage.getDataFromApi(query, page = page)
-            viewModel.updateData()
+            StorageData.saveDataInLocal(requireContext(), viewModel.getFavoriteElements())
+//            binding.rvSearch.scrollToPosition((viewModel.liveData.value?.size?.minus(1))?: 0)
         }
     }
 
