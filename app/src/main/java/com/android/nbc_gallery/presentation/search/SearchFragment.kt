@@ -20,6 +20,7 @@ import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.data.repository.UiRepositoryStorageImpl
 import com.android.nbc_gallery.databinding.FragmentSearchBinding
 import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
+import com.android.nbc_gallery.presentation.main.MainActivity
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
 import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewModelFactory
@@ -119,9 +120,9 @@ class SearchFragment : Fragment() {
         }
         viewModel.liveData.observe(viewLifecycleOwner){ livedata ->
             Log.d("뷰모델 체크", "${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}")
-            searchAdapter.submitList(viewModel.liveData.value)
             StorageData.saveDataInLocal(requireContext(), viewModel.getFavoriteElements())
             StorageData.loadDataInLocal(requireContext())
+            searchAdapter.submitList(viewModel.liveData.value)
 //            storageViewmodel.updateData()
 //            binding.rvSearch.scrollToPosition((viewModel.liveData.value?.size?.minus(1))?: 0)
         }

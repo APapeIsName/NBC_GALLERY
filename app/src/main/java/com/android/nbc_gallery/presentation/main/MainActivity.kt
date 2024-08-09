@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity() {
 
         searchViewModel.liveData.observe(this) {
             Log.d("메인 액티비티 옵저버", "서치 뷰모델")
+            StorageData.saveDataInLocal(this, searchViewModel.getFavoriteElements())
+            StorageData.loadDataInLocal(this)
             storageViewmodel.updateData()
         }
         storageViewmodel.liveData.observe(this) {

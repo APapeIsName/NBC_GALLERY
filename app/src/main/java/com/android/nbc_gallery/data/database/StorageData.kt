@@ -3,6 +3,7 @@ package com.android.nbc_gallery.data.database
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.provider.ContactsContract.Data
 import android.util.Log
 import com.android.nbc_gallery.data.entity.DataModel
 import com.android.nbc_gallery.presentation.mapper.toGalleryEntity
@@ -27,7 +28,10 @@ object StorageData {
                     isNotIn = false
                 }
             }
-            if(isNotIn) storageList.add(i)
+            if(isNotIn) {
+                Log.d("스토리지 들어오는 데이터", "$i")
+                storageList.add(i)
+            }
         }
 
         val editor = storagePrefs?.edit()
@@ -56,12 +60,29 @@ object StorageData {
         } else {
              list = listOf()
         }
-        storageList.addAll(list)
+        for(i in list) {
+            var isNotIn = true
+            for(j in storageList) {
+                if(i.imgUrl == j.imgUrl) {
+                    isNotIn = false
+                }
+            }
+            if(isNotIn) {
+                Log.d("스토리지 들어오는 데이터", "$i")
+                storageList.add(i)
+            }
+        }
         return getData()
     }
 
-    fun deleteDataInLocal() {
-
+    fun deleteDataInLocal(data: DataModel.GalleryEntity) {
+        for(i in storageList.indices) {
+            if(data.imgUrl == storageList[i].imgUrl) {
+                Log.d("좋아요 삭제", " 좋아요 삭 제 $storageList ")
+                storageList.removeAt(i)
+                Log.d("좋아요 삭제", " 좋아요 삭 제 이후 $storageList ")
+            }
+        }
     }
 
     fun getData(): List<DataModel> {

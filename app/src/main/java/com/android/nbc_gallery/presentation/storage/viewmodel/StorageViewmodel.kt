@@ -8,7 +8,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.android.nbc_gallery.data.database.APIDataStorage
+import com.android.nbc_gallery.data.database.StorageData
 import com.android.nbc_gallery.data.entity.DataModel
+import com.android.nbc_gallery.presentation.mapper.toGalleryEntity
 import com.android.nbc_gallery.presentation.repository.UiRepository
 import com.android.nbc_gallery.presentation.uimodel.UiModel
 import kotlinx.coroutines.launch
@@ -29,9 +31,12 @@ class StorageViewmodel(private val uiRepository: UiRepository) : ViewModel() {
     fun switchFavorite(index: Int) {
         _liveData.value = liveData.value?.filterIsInstance<UiModel.GalleryModel>()
             ?.mapIndexed { i, ele ->
-            if(i == index) ele.copy(
-                isFavorite = !ele.isFavorite
-            ) else {
+            if(i == index) {
+                if(ele.isFavorite) StorageData.deleteDataInLocal(listOf(ele).toGalleryEntity()[0])
+                ele.copy(
+                    isFavorite = !ele.isFavorite
+                )
+            } else {
                 ele.copy()
             }
         }

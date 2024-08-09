@@ -14,12 +14,14 @@ import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
 import com.android.nbc_gallery.data.repository.UiRepositoryStorageImpl
 import com.android.nbc_gallery.databinding.FragmentStorageBinding
 import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
+import com.android.nbc_gallery.presentation.main.MainActivity
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
 import com.android.nbc_gallery.presentation.mapper.toGalleryModel
 import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewModelFactory
 import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewmodel
 import com.bumptech.glide.Glide
+import kotlin.properties.Delegates
 
 class StorageFragment : Fragment() {
     private val binding by lazy { FragmentStorageBinding.inflate(layoutInflater) }
@@ -66,8 +68,8 @@ class StorageFragment : Fragment() {
         }
         viewModel.liveData.observe(viewLifecycleOwner){
             //${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}
-            Log.d("스토리지 뷰모델 체크", "${viewModel.liveData.value} , ")
-            storageAdapter.submitList(viewModel.liveData.value)
+            Log.d("스토리지 뷰모델 체크", "${viewModel.getFavoriteElements()} , ")
+            storageAdapter.submitList(viewModel.getFavoriteElements())
         }
     }
 
