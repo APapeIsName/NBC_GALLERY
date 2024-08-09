@@ -22,6 +22,10 @@ class StorageViewmodel(private val uiRepository: UiRepository) : ViewModel() {
         _liveData.value = list
     }
 
+    fun updateData() {
+        _liveData.value = uiRepository.getUiModelList() as List<UiModel.GalleryModel>
+    }
+
     fun switchFavorite(index: Int) {
         _liveData.value = liveData.value?.filterIsInstance<UiModel.GalleryModel>()
             ?.mapIndexed { i, ele ->

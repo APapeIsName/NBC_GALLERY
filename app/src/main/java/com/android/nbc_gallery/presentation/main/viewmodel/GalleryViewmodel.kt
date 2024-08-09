@@ -27,11 +27,6 @@ class GalleryViewmodel(private val uiRepository: UiRepository) : ViewModel() {
         _liveData.value = list
     }
 
-    fun compareFavorite(list: List<UiModel>) {
-        // isFavorite 이 true인 애들 중에 지금 리스트 중에 imgUrl이 같은 애가 있다면
-        
-    }
-
     fun switchFavorite(index: Int) {
         _liveData.value = liveData.value?.filterIsInstance<UiModel.GalleryModel>()
             ?.mapIndexed { i, ele ->

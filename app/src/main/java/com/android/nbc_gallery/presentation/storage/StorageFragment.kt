@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.android.nbc_gallery.data.database.StorageData
 import com.android.nbc_gallery.data.entity.DataModel
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
+import com.android.nbc_gallery.data.repository.UiRepositoryStorageImpl
 import com.android.nbc_gallery.databinding.FragmentStorageBinding
 import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
@@ -23,8 +24,8 @@ import com.bumptech.glide.Glide
 class StorageFragment : Fragment() {
     private val binding by lazy { FragmentStorageBinding.inflate(layoutInflater) }
     private val storageAdapter = GalleryRecyclerViewAdapter()
-    private val viewModel by activityViewModels<StorageViewmodel> {
-        StorageViewModelFactory(UiRepositoryGalleryImpl())
+    val viewModel by activityViewModels<StorageViewmodel> {
+        StorageViewModelFactory(UiRepositoryStorageImpl())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,8 @@ class StorageFragment : Fragment() {
         storageAdapter.drawImage = GalleryRecyclerViewAdapter.DrawImage { url ->
             Glide.with(this).load(url)
         }
-        viewModel.updateList(StorageData.loadDataInLocal(requireContext()).filterIsInstance<DataModel.GalleryEntity>().toGalleryModel())
+        viewModel.updateData()
+//        viewModel.updateList(StorageData.loadDataInLocal(requireContext()).filterIsInstance<DataModel.GalleryEntity>().toGalleryModel())
     }
 
     override fun onCreateView(
@@ -64,8 +66,8 @@ class StorageFragment : Fragment() {
         }
         viewModel.liveData.observe(viewLifecycleOwner){
             //${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}
-            Log.d("스토리지 뷰모델 체크", "${viewModel.getFavoriteElements()} , ")
-            storageAdapter.submitList(viewModel.getFavoriteElements())
+            Log.d("스토리지 뷰모델 체크", "${viewModel.liveData.value} , ")
+            storageAdapter.submitList(viewModel.liveData.value)
         }
     }
 

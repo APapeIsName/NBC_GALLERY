@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -16,10 +17,13 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.android.nbc_gallery.data.database.APIDataStorage
 import com.android.nbc_gallery.data.database.StorageData
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
+import com.android.nbc_gallery.data.repository.UiRepositoryStorageImpl
 import com.android.nbc_gallery.databinding.FragmentSearchBinding
 import com.android.nbc_gallery.presentation.common.GalleryRecyclerViewAdapter
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
+import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewModelFactory
+import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewmodel
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -117,6 +121,8 @@ class SearchFragment : Fragment() {
             Log.d("뷰모델 체크", "${viewModel.liveData.value?.size}, ${viewModel.liveData.value.toString()}")
             searchAdapter.submitList(viewModel.liveData.value)
             StorageData.saveDataInLocal(requireContext(), viewModel.getFavoriteElements())
+            StorageData.loadDataInLocal(requireContext())
+//            storageViewmodel.updateData()
 //            binding.rvSearch.scrollToPosition((viewModel.liveData.value?.size?.minus(1))?: 0)
         }
     }

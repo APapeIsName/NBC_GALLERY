@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 
 object StorageData {
-    private var storageList: List<DataModel> = listOf()
+    private val storageList: MutableList<DataModel.GalleryEntity> = mutableListOf()
     var storagePrefs : SharedPreferences? = null
 
     fun saveDataInLocal(context: Context, list: List<UiModel>) {
@@ -19,12 +19,23 @@ object StorageData {
         if(storagePrefs == null) {
             initPrefs(context)
         }
-        storageList = list.filterIsInstance<UiModel.GalleryModel>().toGalleryEntity()
+        val entities = list.filterIsInstance<UiModel.GalleryModel>().toGalleryEntity()
+        for(i in entities) {
+            var isNotIn = true
+            for(j in storageList) {
+                if(i.imgUrl == j.imgUrl) {
+                    isNotIn = false
+                }
+            }
+            if(isNotIn) storageList.add(i)
+        }
+
         val editor = storagePrefs?.edit()
         val str = GsonBuilder().create().toJson(
             storageList,
             object : TypeToken<List<DataModel.GalleryEntity>>() {}.type
         )
+        Log.d("스토리지 데이터 리스트", storageList.toString())
         Log.d("ToJsonFF", str)
         editor?.putString("storage", str)
         editor?.apply()
@@ -45,9 +56,12 @@ object StorageData {
         } else {
              list = listOf()
         }
-
-        storageList = list
+        storageList.addAll(list)
         return getData()
+    }
+
+    fun deleteDataInLocal() {
+
     }
 
     fun getData(): List<DataModel> {

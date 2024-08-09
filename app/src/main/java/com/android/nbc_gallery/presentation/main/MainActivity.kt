@@ -1,6 +1,7 @@
 package com.android.nbc_gallery.presentation.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,19 +14,25 @@ import com.android.nbc_gallery.R
 import com.android.nbc_gallery.data.database.StorageData
 import com.android.nbc_gallery.data.entity.DataModel
 import com.android.nbc_gallery.data.repository.UiRepositoryGalleryImpl
+import com.android.nbc_gallery.data.repository.UiRepositoryStorageImpl
 import com.android.nbc_gallery.databinding.ActivityMainBinding
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewModelFactory
 import com.android.nbc_gallery.presentation.main.viewmodel.GalleryViewmodel
 import com.android.nbc_gallery.presentation.mapper.toGalleryModel
 import com.android.nbc_gallery.presentation.search.SearchFragment
 import com.android.nbc_gallery.presentation.storage.StorageFragment
+import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewModelFactory
+import com.android.nbc_gallery.presentation.storage.viewmodel.StorageViewmodel
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     val uiRepositoryGalleryImpl = UiRepositoryGalleryImpl()
-    private val viewModel by viewModels<GalleryViewmodel> {
+    val searchViewModel by viewModels<GalleryViewmodel> {
         GalleryViewModelFactory(uiRepositoryGalleryImpl)
+    }
+    val storageViewmodel by viewModels<StorageViewmodel> {
+        StorageViewModelFactory(UiRepositoryStorageImpl())
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         }
 //        viewModel.updateList(StorageData.loadDataInLocal(this).filterIsInstance<DataModel.GalleryEntity>().toGalleryModel())
 
+        StorageData.loadDataInLocal(this)
         val searchFragment = SearchFragment.newInstance()
         val storageFragment = StorageFragment.newInstance()
 
@@ -58,6 +66,14 @@ class MainActivity : AppCompatActivity() {
             tab.text = tabTitles[pos]
             tab.icon = tabIcons[pos]
         }.attach()
+
+        searchViewModel.liveData.observe(this) {
+            Log.d("메인 액티비티 옵저버", "서치 뷰모델")
+            storageViewmodel.updateData()
+        }
+        storageViewmodel.liveData.observe(this) {
+            Log.d("메인 액티비티 옵저버", "스토리지 뷰모델")
+        }
 
 //        setFragment(searchFragment)
 //
